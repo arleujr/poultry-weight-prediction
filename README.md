@@ -43,13 +43,15 @@ poultry-weight-prediction/
    ```
 
 2. Build the Data Warehouse & Train the Model:
+   ```bash
    python src/data/transform.py
    python src/models/train.py
-   
+   ```
 
 3. Launch the Supervisor Web App:
+   ```bash
    streamlit run app.py
-  
+  ```
 
 
 **Author: Arleu Junior**  

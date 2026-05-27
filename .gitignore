@@ -1,0 +1,16 @@
+# Data files
+data/
+*.csv
+*.xlsx
+*.duckdb
+
+# Machine Learning models
+models/*.pkl
+models/*.joblib
+
+# Python environments and cache
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env

@@ -1,78 +1,103 @@
 import duckdb
+import pandas as pd
+import numpy as np
+import os
+import datetime
+
+def generate_mock_raw_data():
+    """Gera o arquivo raw_batches.csv com os novos dados biológicos e de ração."""
+    print("Generating synthetic raw data with biological curves...")
+    np.random.seed(42)
+    num_records = 500
+    
+    farms = ["GRANJA_01", "GRANJA_02", "GRANJA_03"]
+    farm_distances = {"GRANJA_01": 15.5, "GRANJA_02": 45.5, "GRANJA_03": 80.0}
+    
+    data = {
+        'batch_id': [f"LOTE_{i:04d}" for i in range(num_records)],
+        'farm_id': np.random.choice(farms, num_records),
+        'technician_id': np.random.choice(["TECNICO_01", "TECNICO_02", "TECNICO_03"], num_records),
+        'placement_date': [datetime.date(2025, 1, 1) + datetime.timedelta(days=int(x)) for x in np.random.randint(0, 300, num_records)],
+        'strain': np.random.choice(["Ross 308", "Cobb 500"], num_records),
+        'flock_sex': np.random.choice(["Macho", "Fêmea", "Misto"], num_records),
+        'fasting_time_hrs': np.random.uniform(6.0, 12.0, num_records),
+        'housed_birds': np.random.randint(15000, 30000, num_records),
+        'culls': np.random.randint(30, 150, num_records)
+    }
+    
+    df = pd.DataFrame(data)
+    df['transport_distance_km'] = df['farm_id'].map(farm_distances)
+    df['shed_type'] = np.where(df['farm_id'] == "GRANJA_01", "Convencional", "Dark House")
+    df['slaughter_date'] = df['placement_date'] + pd.to_timedelta(np.random.randint(42, 48, num_records), unit='d')
+    
+    df['mortality_rate_pct'] = np.random.uniform(1.5, 5.5, num_records)
+    
+    # Pesagens
+    df['weight_7d_g'] = np.random.normal(200, 10, num_records)
+    df['weight_14d_g'] = df['weight_7d_g'] + np.random.normal(320, 15, num_records)
+    df['weight_21d_g'] = df['weight_14d_g'] + np.random.normal(510, 20, num_records)
+    df['weight_28d_g'] = df['weight_21d_g'] + np.random.normal(630, 25, num_records)
+    df['weight_35d_g'] = df['weight_28d_g'] + np.random.normal(700, 30, num_records)
+    df['weight_42d_g'] = df['weight_35d_g'] + np.random.normal(720, 35, num_records)
+    
+    # Peso real (com perdas) e Ração
+    df['actual_slaughter_weight_g'] = df['weight_42d_g'] + 150 - (df['fasting_time_hrs'] * 2.5) - (df['transport_distance_km'] * 0.1)
+    df['feed_delivered_kg'] = ((df['housed_birds'] * df['actual_slaughter_weight_g']) / 1000) * np.random.uniform(1.5, 1.7, num_records) + 500
+    df['feed_remaining_kg'] = np.random.uniform(100, 1000, num_records)
+    
+    # Viés do técnico
+    df['technician_estimated_weight_g'] = df['actual_slaughter_weight_g'] + np.random.normal(50, 60, num_records)
+    
+    os.makedirs("data/raw", exist_ok=True)
+    df.to_csv("data/raw/raw_batches.csv", index=False)
 
 def build_star_schema():
     """
     Transform raw staging data into a star schema (fact and dimension tables)
     optimized for analytics and machine learning.
     """
+    generate_mock_raw_data()
+    
     db_path = "data/processed/warehouse.duckdb"
-    print("Connecting to data warehouse...")
+    os.makedirs("data/processed", exist_ok=True)
+    print("\nConnecting to data warehouse...")
     conn = duckdb.connect(db_path)
 
     try:
-        # Dimension: farms (stable farm attributes for joins and filters)
         print("Building dim_farm...")
         conn.execute("""
             CREATE OR REPLACE TABLE dim_farm AS
-            SELECT DISTINCT
-                farm_id,
-                shed_type,
-                transport_distance_km
-            FROM raw_batches;
+            SELECT DISTINCT farm_id, shed_type, transport_distance_km
+            FROM read_csv_auto('data/raw/raw_batches.csv');
         """)
 
-        # Dimension: farmers (canonical list for joins and enrichment)
-        print("Building dim_farmer...")
+        print("Building dim_technician...")
         conn.execute("""
-            CREATE OR REPLACE TABLE dim_farmer AS
-            SELECT DISTINCT farmer_id
-            FROM raw_batches;
+            CREATE OR REPLACE TABLE dim_technician AS
+            SELECT DISTINCT technician_id
+            FROM read_csv_auto('data/raw/raw_batches.csv');
         """)
 
-        # Dimension: supervisors (canonical list for accountability)
-        print("Building dim_supervisor...")
-        conn.execute("""
-            CREATE OR REPLACE TABLE dim_supervisor AS
-            SELECT DISTINCT supervisor_id
-            FROM raw_batches;
-        """)
-
-        # Fact: slaughter batches (event-level metrics and foreign keys)
         print("Building fct_slaughter_batches...")
         conn.execute("""
             CREATE OR REPLACE TABLE fct_slaughter_batches AS
             SELECT
-                batch_id,
-                farm_id,
-                farmer_id,
-                supervisor_id,
+                batch_id, farm_id, technician_id,
                 CAST(placement_date AS DATE) AS placement_date,
                 CAST(slaughter_date AS DATE) AS slaughter_date,
-                strain,
-                flock_sex,
-                flock_size,
-                mortality_rate_pct,
-                fasting_time_hrs,
-                weight_30d_g,
-                weight_40d_g,
-                farmer_estimated_weight_g,
-                actual_slaughter_weight_g,
-                (farmer_estimated_weight_g - actual_slaughter_weight_g) AS farmer_error_margin_g
-            FROM raw_batches;
+                strain, flock_sex, housed_birds, culls, mortality_rate_pct,
+                feed_delivered_kg, feed_remaining_kg, fasting_time_hrs,
+                weight_7d_g, weight_14d_g, weight_21d_g, weight_28d_g, weight_35d_g, weight_42d_g,
+                technician_estimated_weight_g, actual_slaughter_weight_g,
+                (technician_estimated_weight_g - actual_slaughter_weight_g) AS error_margin_g
+            FROM read_csv_auto('data/raw/raw_batches.csv');
         """)
 
         print("Star schema built successfully.")
-
-        # Validation: list created tables
-        tables = conn.execute("SHOW TABLES;").df()
-        print("\nCurrent tables in the data warehouse:")
-        print(tables)
-
     except Exception as e:
         print(f"Error during transformation: {e}")
     finally:
         conn.close()
-        print("Database connection closed.")
 
 if __name__ == "__main__":
     build_star_schema()

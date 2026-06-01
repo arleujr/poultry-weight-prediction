@@ -115,3 +115,14 @@ if submitted:
         st.warning(f"⚠️ **Atenção:** Alto viés humano detectado. A estimativa do granjeiro errou por {abs(correction):.0f}g. Utilize a previsão da IA para o planejamento do abatedouro.")
     else:
         st.success("✅ A estimativa do granjeiro está excelente e dentro da margem operacional de 100g.")
+        # 8. Footer / Assinatura
+st.markdown("<br><br>", unsafe_allow_html=True) # Dá um espaço visual para respirar
+st.markdown(
+    """
+    <div style='text-align: center; color: gray;'>
+        <small>
+            Desenvolvido por <b>Arleu Junior</b> 
+                </div>
+    """, 
+    unsafe_allow_html=True
+)

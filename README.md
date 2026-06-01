@@ -1,5 +1,5 @@
 
-# AI Poultry Weight Predictor & Bias Correction
+# Poultry Weight Predictor & Bias Correction
 
 > Offline-first toolkit to ingest farm data, predict broiler slaughter weight, and deliver actionable insights through a Streamlit web app for supervisors and a Power BI dashboard for managers.
 

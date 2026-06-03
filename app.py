@@ -14,7 +14,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS - Otimização Extrema para Telas de Celular e Paleta Corporativa
+# Custom CSS - Ajuste responsivo perfeito sem quebrar as bordas laterais
 st.markdown("""
     <style>
     /* Fundo geral moderno */
@@ -22,7 +22,7 @@ st.markdown("""
         background-color: #F8FAFC;
     }
     
-    /* Header Dark Mode Premium Compactado para Mobile */
+    /* Header Dark Mode Premium Compactado */
     .brand-banner {
         background: linear-gradient(135deg, #0B1528 0%, #1E293B 100%);
         padding: 1.5rem;
@@ -45,7 +45,7 @@ st.markdown("""
         margin: 0 !important;
     }
     
-    /* Estilização das Abas (Tabs) Compactas para dedão no celular */
+    /* Estilização das Abas (Tabs) Compactas */
     .stTabs [data-baseweb="tab-list"] {
         gap: 5px;
         background-color: #E2E8F0;
@@ -77,7 +77,7 @@ st.markdown("""
         background-color: #E30613 !important;
     }
 
-    /* Customização dos inputs menos espessos (reduz altura vertical) */
+    /* Customização dos inputs menos espessos */
     div[data-baseweb="select"], div[data-baseweb="input"], input {
         border-radius: 10px !important;
         border: 1px solid #E2E8F0 !important;
@@ -97,47 +97,44 @@ st.markdown("""
     }
     
     /* ------------------------------------------------------------------------
-       FORÇAR COLUNAS LADO A LADO NO CELULAR (Métricas de Saída e KPIs)
+       FLEX BOX ADAPTÁVEL: PREVINE ROLAGEM LATERAL EM QUALQUER CELULAR
        ------------------------------------------------------------------------ */
     @media (max-width: 640px) {
-        /* Força as colunas nativas do Streamlit a manterem layout horizontal */
         div[data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
-            flex-wrap: nowrap !important;
+            flex-wrap: wrap !important; /* Permite quebra se faltar espaço físico */
             gap: 8px !important;
         }
         div[data-testid="column"] {
-            flex: 1 1 0% !important;
-            min-width: 0 !important;
+            flex: 1 1 45% !important; /* Ocupa metade da tela se necessário, sem estourar */
+            min-width: 130px !important; /* Não deixa esmagar o texto */
         }
-        /* Enxuga o tamanho interno dos cards de métricas no celular */
+        /* Ajuste fino das métricas internas para telas mini */
         div[data-testid="stMetricSimpleUnit"] {
-            padding: 0.8rem !important;
+            padding: 0.7rem !important;
             border-radius: 12px !important;
             border-left: 4px solid #E30613 !important;
         }
-        /* Reduz fontes das métricas para não quebrar linha no celular */
         div[data-testid="stMetricLabel"] {
             font-size: 0.75rem !important;
         }
         div[data-testid="stMetricValue"] {
-            font-size: 1.1rem !important;
+            font-size: 1.05rem !important;
         }
         div[data-testid="stMetricDelta"] {
-            font-size: 0.7rem !important;
+            font-size: 0.65rem !important;
         }
-        /* Ajusta os cards de KPI superiores no celular */
         .kpi-box {
             padding: 0.7rem !important;
             border-radius: 12px !important;
         }
         .kpi-box h3 {
-            font-size: 1rem !important;
+            font-size: 0.95rem !important;
         }
     }
 
-    /* Configuração padrão de Cards de Saída para Desktop */
+    /* Desktop View Padronizada */
     div[data-testid="stMetricSimpleUnit"] {
         background-color: #FFFFFF;
         padding: 1.5rem;
@@ -174,7 +171,7 @@ st.markdown("""
         margin-bottom: 0.5rem;
     }
     
-    /* Botão Principal Slim e Inteligente */
+    /* Botão Principal */
     .stButton>button[kind="primary"] {
         background-color: #E30613 !important;
         color: #FFFFFF !important;
@@ -187,10 +184,8 @@ st.markdown("""
         box-shadow: 0 4px 10px rgba(227, 6, 19, 0.2);
         transition: all 0.2s ease-in-out;
     }
-    
     .stButton>button[kind="primary"]:hover {
         background-color: #B90510 !important;
-        transform: translateY(-1px);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -230,9 +225,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 5. Interactive Data Entry Flow
+# 5. Interactive Data Entry Flow (Texto Simplificado conforme solicitado)
 # -----------------------------------------------------------------------------
-st.subheader("Configuração Estratégica do Lote")
+st.subheader("Dados do Lote")
 
 tab_log, tab_san, tab_weight = st.tabs(["📍 1. Lote", "🏥 2. Manejo", "📈 3. Pesagens"])
 

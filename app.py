@@ -6,32 +6,57 @@ import joblib
 import os
 
 # -----------------------------------------------------------------------------
-# 1. UI Configuration & Corporate Branding
+# 1. UI Configuration & Corporate Branding (Pif Paf Identity)
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Preditor de Peso - IA",
+    page_title="Preditor de Peso | Pif Paf",
     page_icon="🐔",
     layout="centered"
 )
 
-# Injecting custom CSS for corporate visual identity (Primary Red, Secondary Yellow)
+# Premium Custom CSS - Clean Dashboard & Rounded Cards Aesthetic
 st.markdown("""
     <style>
-    /* Corporate top highlight bar */
+    /* Fundo da aplicação levemente acinzentado para destacar os cards brancos */
+    .stApp {
+        background-color: #F8FAFC;
+    }
+    
+    /* Linha de destaque superior com o Amarelo da marca */
     header {
         border-bottom: 5px solid #FFD200;
     }
     
-    /* Primary title styling */
+    /* Título Principal no Vermelho oficial */
     h1 {
         color: #E30613 !important;
+        font-weight: 700 !important;
     }
     
-    /* Primary button hover state overrides */
+    /* Estilização dos blocos de métricas (Efeito Cards/Bento Grid) */
+    div[data-testid="stMetricSimpleUnit"] {
+        background-color: #FFFFFF;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        border-left: 5px solid #E30613;
+    }
+    
+    /* Customização do Botão Principal */
+    .stButton>button[kind="primary"] {
+        background-color: #E30613 !important;
+        color: #FFFFFF !important;
+        border-radius: 12px !important;
+        border: none !important;
+        padding: 0.6rem 2rem !important;
+        font-weight: 600 !important;
+        width: 100%;
+        transition: all 0.2s ease-in-out;
+    }
+    
     .stButton>button[kind="primary"]:hover {
-        border-color: #FFD200 !important;
-        color: #FFD200 !important;
-        background-color: #FFFFFF !important;
+        background-color: #FFD200 !important;
+        color: #E30613 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -39,7 +64,6 @@ st.markdown("""
 # -----------------------------------------------------------------------------
 # 2. Static Farm Registry (Master Data Representation)
 # -----------------------------------------------------------------------------
-# Farms have fixed geographic locations; distances are constant constraints.
 FARM_REGISTRY = {
     "GRANJA_01": {"distance_km": 15.5},
     "GRANJA_02": {"distance_km": 45.5},
@@ -65,7 +89,7 @@ except FileNotFoundError:
 # -----------------------------------------------------------------------------
 # 4. Main Application Header
 # -----------------------------------------------------------------------------
-st.title("🐔 Preditor de Peso de Abate (IA)")
+st.title("Previsão de peso de abate")
 st.markdown("Insira os dados operacionais do lote para calcular a estimativa final baseada em aprendizado de máquina.")
 
 # -----------------------------------------------------------------------------
@@ -76,10 +100,15 @@ with st.form("prediction_form"):
     
     # Batch & Personnel Identification
     col_id1, col_id2, col_id3 = st.columns(3)
-    with col_id1:
-        batch_id = st.text_input("ID do Lote", "LOTE_HOJE_003")
+    
     with col_id2:
         farm_id = st.selectbox("ID da Granja", list(FARM_REGISTRY.keys()))
+        
+    with col_id1:
+        hoje_str = datetime.datetime.now().strftime("%d%m")
+        lote_sugerido = f"LOTE_{farm_id}_{hoje_str}"
+        batch_id = st.text_input("ID do Lote", value=lote_sugerido)
+        
     with col_id3:
         technician_id = st.selectbox("ID do Técnico", ["TECNICO_01", "TECNICO_02", "TECNICO_03"])
         
@@ -90,7 +119,7 @@ with st.form("prediction_form"):
         lineage = st.selectbox("Linhagem", ["Ross 308", "Cobb 500"])
         
         # Displaying the immutable distance fetched from master data
-        st.info(f"📍 Distância Fixa: {FARM_REGISTRY[farm_id]['distance_km']} km")
+        st.info(f"Distância: {FARM_REGISTRY[farm_id]['distance_km']} km")
         
     with col_log2:
         slaughter_date = st.date_input("Data Prevista de Abate", datetime.date(2026, 5, 15), format="DD/MM/YYYY")
@@ -132,10 +161,10 @@ with st.form("prediction_form"):
         w_42 = st.number_input("Peso aos 42 dias (g)", value=3069, step=10)
 
     st.markdown("---")
-    st.subheader("Avaliação Zootécnica Final")
+    st.subheader("Estimativa final")
     
     # Human Baseline / Viable Target
-    technician_estimate = st.number_input("Estimativa do Granjeiro (g)", min_value=0.0, value=3200.0, step=10.0)
+    technician_estimate = st.number_input("Estimativa do Técnico (g)", min_value=0.0, value=3200.0, step=10.0)
     
     # Execution Trigger
     submit_button = st.form_submit_button("Calcular Estimativa", type="primary")
@@ -146,7 +175,10 @@ with st.form("prediction_form"):
 if submit_button:
     # Feature Engineering: Feature derivations based on database schema definitions
     batch_age_days = (slaughter_date - placement_date).days
-    mortality_rate = (dead_birds / housed_birds) * 100 if housed_birds > 0 else 0
+    
+    # Cálculo corrigido: somando mortos + refugos antes de calcular a taxa
+    mortality_rate = ((dead_birds + culls) / housed_birds) * 100 if housed_birds > 0 else 0
+    
     feed_consumed_kg = feed_delivered_kg - feed_remaining_kg
     resolved_distance = FARM_REGISTRY[farm_id]['distance_km']
     
@@ -177,14 +209,36 @@ if submit_button:
     adjustment = prediction - technician_estimate
     
     # -------------------------------------------------------------------------
-    # 7. Output Visualization Layer
+    # 7. Output Visualization Layer (Estilo Cards Premium)
     # -------------------------------------------------------------------------
-    st.success("Análise multivariada de série temporal concluída com sucesso.")
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.subheader("Análise de Série Temporal com Contexto Local concluída com sucesso.")
     
     col_res1, col_res2, col_res3 = st.columns(3)
-    col_res1.metric("Estimativa do Granjeiro", f"{technician_estimate:.0f} g")
-    col_res2.metric("Previsão da IA", f"{prediction:.0f} g", f"{adjustment:.0f} g de ajuste", delta_color="inverse")
-    col_res3.metric("Mortalidade Calculada", f"{mortality_rate:.2f}%")
+    
+    with col_res1:
+        st.metric(
+            label="Estimativa de Campo", 
+            value=f"{technician_estimate:.0f} g",
+            help="Peso médio estimado visualmente pelo técnico"
+        )
+        
+    with col_res2:
+        st.metric(
+            label="Previsão Inteligente (IA)", 
+            value=f"{prediction:.0f} g", 
+            delta=f"{adjustment:.0f} g de ajuste", 
+            delta_color="inverse"
+        )
+        
+    with col_res3:
+        st.metric(
+            label="Mortalidade Real", 
+            value=f"{mortality_rate:.2f}%",
+            help="Índice combinando aves mortas e refugos do lote."
+        )
+        
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # -------------------------------------------------------------------------
     # 8. Data Persistence for BI Synchronization
@@ -205,7 +259,7 @@ if submit_button:
     else:
         input_df.to_csv(csv_path, index=False)
         
-    st.info("Log de predição gravado com sucesso. Pipeline do Power BI pronto para sincronização.")
+    st.info("Log de predição gravado com sucesso.")
 
 # -----------------------------------------------------------------------------
 # 9. Developer Signature / Footer Module
@@ -215,8 +269,7 @@ st.markdown(
     """
     <div style='text-align: center; color: gray;'>
         <small>
-            Desenvolvido por <b>Arleu Junior</b> | 
-            <a href='https://github.com/arleujr' target='_blank' style='color: gray; text-decoration: none;'>GitHub</a>
+            Desenvolvido por <b>Arleu Junior</b> 
         </small>
     </div>
     """, 

@@ -14,7 +14,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS para destruir o visual de planilha e criar um Dashboard Premium
+# Custom CSS - Sobrescrita de cores padrão para a paleta corporativa
 st.markdown("""
     <style>
     /* Fundo geral moderno */
@@ -29,7 +29,7 @@ st.markdown("""
         border-radius: 24px;
         margin-bottom: 2rem;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        border-bottom: 5px solid #FFD200;
+        border-bottom: 5px solid #FFD200; /* Linha Amarela de Destaque */
     }
     
     .brand-banner h1 {
@@ -45,7 +45,7 @@ st.markdown("""
         margin: 0 !important;
     }
     
-    /* Estilização das Abas (Tabs) para parecerem botões de navegação modernos */
+    /* Estilização das Abas (Tabs) - Forçando o Vermelho Corporativo */
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
         background-color: #E2E8F0;
@@ -64,43 +64,41 @@ st.markdown("""
         transition: all 0.2s;
     }
     
+    /* Hover da aba em Vermelho */
     .stTabs [data-baseweb="tab"]:hover {
-        color: #E30613;
+        color: #E30613 !important;
     }
     
+    /* Aba Ativa Selecionada - Fundo branco com texto em Vermelho */
     .stTabs [aria-selected="true"] {
         background-color: #FFFFFF !important;
         color: #E30613 !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
     }
+    
+    /* Remove a linha azul padrão sob as abas do Streamlit */
+    .stTabs [data-baseweb="tab-highlight-bar"] {
+        background-color: #E30613 !important;
+    }
 
-    /* Customização fina dos inputs para remover aspecto de formulário padrão */
+    /* Customização dos inputs para manter cantos arredondados */
     div[data-baseweb="select"], div[data-baseweb="input"], input {
         border-radius: 12px !important;
         border: 1px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
     }
     
+    /* Foco ativo do input mudando para Vermelho (Elimina o foco azul nativo) */
     div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:focus-within {
         border-color: #E30613 !important;
         box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1) !important;
     }
     
-    /* Cards de KPI Dinâmicos (Indicadores de Suporte) */
-    .kpi-box {
-        background-color: #FFFFFF;
-        padding: 1.2rem;
-        border-radius: 16px;
-        border: 1px solid #E2E8F0;
-        border-left: 4px solid #FFD200;
-        margin-bottom: 1rem;
-    }
-    
-    /* Alerta Logístico Elegante */
+    /* Substituindo o Alerta Azul por um Card com borda Vermelha */
     div[data-testid="stNotification"] {
         background-color: #FFFFFF !important;
         border: 1px solid #E2E8F0 !important;
-        border-left: 5px solid #FFD200 !important;
+        border-left: 5px solid #E30613 !important; /* Trocado para o Vermelho */
         border-radius: 14px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02) !important;
     }
@@ -109,16 +107,26 @@ st.markdown("""
         font-weight: 600 !important;
     }
     
+    /* Cards de KPI de Suporte Lateral (Idade e Ração) */
+    .kpi-box {
+        background-color: #FFFFFF;
+        padding: 1.2rem;
+        border-radius: 16px;
+        border: 1px solid #E2E8F0;
+        border-left: 4px solid #FFD200; /* Mantido Amarelo para contraste */
+        margin-bottom: 1rem;
+    }
+    
     /* Cards de Saída (Métricas de Resultado) */
     div[data-testid="stMetricSimpleUnit"] {
         background-color: #FFFFFF;
         padding: 1.8rem;
         border-radius: 20px;
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        border-left: 6px solid #E30613;
+        border-left: 6px solid #E30613; /* Destaque Vermelho */
     }
     
-    /* Botão Principal de Alta Performance */
+    /* Botão Principal Vermelho */
     .stButton>button[kind="primary"] {
         background-color: #E30613 !important;
         color: #FFFFFF !important;
@@ -175,11 +183,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 5. Interactive & Clean Data Entry (Abas em vez de Tabelão Único)
+# 5. Interactive Data Entry Flow
 # -----------------------------------------------------------------------------
 st.subheader("Configuração Estratégica do Lote")
 
-# Criando abas modernas para organizar o fluxo de entrada
 tab_log, tab_san, tab_weight = st.tabs(["📍 1. Logística e Cadastro", "🏥 2. Manejo e Sanidade", "📈 3. Histórico de Pesagens"])
 
 with tab_log:
@@ -236,7 +243,7 @@ with tab_weight:
     technician_estimate = st.number_input("Estimativa do Técnico (g)", min_value=0.0, value=3200.0, step=10.0)
 
 # -----------------------------------------------------------------------------
-# 6. Real-Time Pre-Calculated KPI Indicators (Painel de Inteligência Coletiva)
+# 6. Real-Time Pre-Calculated KPI Indicators
 # -----------------------------------------------------------------------------
 st.markdown("<br>", unsafe_allow_html=True)
 col_kpi1, col_kpi2 = st.columns(2)
@@ -259,7 +266,7 @@ with col_kpi2:
         </div>
     """, unsafe_allow_html=True)
 
-# Big Execution Action Button
+# Main Execution Trigger
 submit_button = st.button("Executar Previsão Inteligente", type="primary")
 
 # -----------------------------------------------------------------------------

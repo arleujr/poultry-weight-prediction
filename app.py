@@ -6,7 +6,7 @@ import joblib
 import os
 
 # -----------------------------------------------------------------------------
-# 1. UI Configuration & High-End Dashboard Aesthetic
+# 1. UI Configuration & Advanced Mobile Responsive Aesthetic
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Preditor de Peso",
@@ -14,7 +14,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS - Sobrescrita total para a paleta corporativa (Vermelho e Amarelo)
+# Custom CSS - Otimização Extrema para Telas de Celular e Paleta Corporativa
 st.markdown("""
     <style>
     /* Fundo geral moderno */
@@ -22,143 +22,175 @@ st.markdown("""
         background-color: #F8FAFC;
     }
     
-    /* Header Dark Mode Premium */
+    /* Header Dark Mode Premium Compactado para Mobile */
     .brand-banner {
         background: linear-gradient(135deg, #0B1528 0%, #1E293B 100%);
-        padding: 2.5rem;
-        border-radius: 24px;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        border-bottom: 5px solid #FFD200; /* Linha Amarela de Destaque */
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border-bottom: 4px solid #FFD200;
     }
     
     .brand-banner h1 {
         color: #FFFFFF !important;
-        font-size: 2.2rem !important;
+        font-size: 1.6rem !important;
         font-weight: 700 !important;
-        margin-bottom: 0.5rem !important;
+        margin-bottom: 0.2rem !important;
     }
     
     .brand-banner p {
         color: #94A3B8 !important;
-        font-size: 1rem !important;
+        font-size: 0.85rem !important;
         margin: 0 !important;
     }
     
-    /* Estilização das Abas (Tabs) - Forçando o Vermelho Corporativo */
+    /* Estilização das Abas (Tabs) Compactas para dedão no celular */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
+        gap: 5px;
         background-color: #E2E8F0;
-        padding: 6px;
-        border-radius: 12px;
+        padding: 4px;
+        border-radius: 10px;
     }
     
     .stTabs [data-baseweb="tab"] {
-        height: 40px;
-        white-space: pre;
+        height: 35px;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        font-size: 0.85rem !important;
         background-color: transparent;
-        border-radius: 8px;
+        border-radius: 6px;
         color: #64748B;
         font-weight: 600;
-        border: none;
-        transition: all 0.2s;
     }
     
-    /* Hover da aba em Vermelho */
     .stTabs [data-baseweb="tab"]:hover {
         color: #E30613 !important;
     }
     
-    /* Aba Ativa Selecionada - Fundo branco com texto em Vermelho */
     .stTabs [aria-selected="true"] {
         background-color: #FFFFFF !important;
         color: #E30613 !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
     }
     
-    /* Remove a linha azul padrão sob as abas do Streamlit */
     .stTabs [data-baseweb="tab-highlight-bar"] {
         background-color: #E30613 !important;
     }
 
-    /* Customização dos inputs para manter cantos arredondados */
+    /* Customização dos inputs menos espessos (reduz altura vertical) */
     div[data-baseweb="select"], div[data-baseweb="input"], input {
-        border-radius: 12px !important;
+        border-radius: 10px !important;
         border: 1px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
+        height: 42px !important;
     }
     
-    /* Foco ativo do input mudando para Vermelho (Elimina o foco azul nativo) */
     div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:focus-within {
         border-color: #E30613 !important;
         box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1) !important;
     }
     
+    /* Ajuste de Margens de Subtítulos */
+    .stSubheader h3 {
+        font-size: 1.1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
     /* ------------------------------------------------------------------------
-       BLINDAGEM DO COMPONENTE DE DISTÂNCIA (st.info) - ELIMINANDO O AZUL NATIVO
+       FORÇAR COLUNAS LADO A LADO NO CELULAR (Métricas de Saída e KPIs)
        ------------------------------------------------------------------------ */
+    @media (max-width: 640px) {
+        /* Força as colunas nativas do Streamlit a manterem layout horizontal */
+        div[data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            gap: 8px !important;
+        }
+        div[data-testid="column"] {
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+        }
+        /* Enxuga o tamanho interno dos cards de métricas no celular */
+        div[data-testid="stMetricSimpleUnit"] {
+            padding: 0.8rem !important;
+            border-radius: 12px !important;
+            border-left: 4px solid #E30613 !important;
+        }
+        /* Reduz fontes das métricas para não quebrar linha no celular */
+        div[data-testid="stMetricLabel"] {
+            font-size: 0.75rem !important;
+        }
+        div[data-testid="stMetricValue"] {
+            font-size: 1.1rem !important;
+        }
+        div[data-testid="stMetricDelta"] {
+            font-size: 0.7rem !important;
+        }
+        /* Ajusta os cards de KPI superiores no celular */
+        .kpi-box {
+            padding: 0.7rem !important;
+            border-radius: 12px !important;
+        }
+        .kpi-box h3 {
+            font-size: 1rem !important;
+        }
+    }
+
+    /* Configuração padrão de Cards de Saída para Desktop */
+    div[data-testid="stMetricSimpleUnit"] {
+        background-color: #FFFFFF;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border-left: 6px solid #E30613;
+    }
+    
+    /* Componente de Informação st.info */
     div[data-testid="stNotification"] {
         background-color: #FFFFFF !important;
         border: 1px solid #E2E8F0 !important;
-        border-left: 6px solid #E30613 !important; /* Borda grossa em Vermelho */
-        border-radius: 14px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02) !important;
+        border-left: 5px solid #E30613 !important;
+        border-radius: 12px !important;
+        padding: 0.75rem !important;
     }
-    
-    /* Forçando o texto interno a ficar em Vermelho */
     div[data-testid="stNotification"] p {
         color: #E30613 !important;
         font-weight: 700 !important;
+        font-size: 0.9rem !important;
     }
-    
-    /* Altera as escritas numéricas/específicas internas para Amarelo de Destaque */
-    div[data-testid="stNotification"] strong, div[data-testid="stNotification"] span {
-        color: #FFD200 !important;
-    }
-    
-    /* Forçando o ícone nativo (SVG) a abandonar o azul e virar Vermelho */
     div[data-testid="stNotification"] svg {
         fill: #E30613 !important;
         color: #E30613 !important;
     }
     
-    /* Cards de KPI de Suporte Lateral (Idade e Ração) */
+    /* Cards de KPI de Suporte Lateral */
     .kpi-box {
         background-color: #FFFFFF;
         padding: 1.2rem;
         border-radius: 16px;
         border: 1px solid #E2E8F0;
-        border-left: 4px solid #FFD200; /* Mantido Amarelo para contraste */
-        margin-bottom: 1rem;
+        border-left: 4px solid #FFD200;
+        margin-bottom: 0.5rem;
     }
     
-    /* Cards de Saída (Métricas de Resultado) */
-    div[data-testid="stMetricSimpleUnit"] {
-        background-color: #FFFFFF;
-        padding: 1.8rem;
-        border-radius: 20px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        border-left: 6px solid #E30613; /* Destaque Vermelho */
-    }
-    
-    /* Botão Principal Vermelho */
+    /* Botão Principal Slim e Inteligente */
     .stButton>button[kind="primary"] {
         background-color: #E30613 !important;
         color: #FFFFFF !important;
-        border-radius: 14px !important;
+        border-radius: 12px !important;
         border: none !important;
-        padding: 1rem 2rem !important;
-        font-size: 1.1rem !important;
+        padding: 0.8rem 2rem !important;
+        font-size: 1rem !important;
         font-weight: 600 !important;
         width: 100%;
-        box-shadow: 0 10px 15px -3px rgba(227, 6, 19, 0.25);
+        box-shadow: 0 4px 10px rgba(227, 6, 19, 0.2);
         transition: all 0.2s ease-in-out;
     }
     
     .stButton>button[kind="primary"]:hover {
         background-color: #B90510 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 12px 20px -3px rgba(227, 6, 19, 0.35);
+        transform: translateY(-1px);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -202,7 +234,7 @@ st.markdown("""
 # -----------------------------------------------------------------------------
 st.subheader("Configuração Estratégica do Lote")
 
-tab_log, tab_san, tab_weight = st.tabs(["📍 1. Lote", "🏥 2. Manejo e Sanidade", "📈 3. Pesagens"])
+tab_log, tab_san, tab_weight = st.tabs(["📍 1. Lote", "🏥 2. Manejo", "📈 3. Pesagens"])
 
 with tab_log:
     st.markdown("<br>", unsafe_allow_html=True)
@@ -268,7 +300,7 @@ feed_consumed_calc = feed_delivered_kg - feed_remaining_kg
 with col_kpi1:
     st.markdown(f"""
         <div class="kpi-box">
-            <small style="color: #64748B; font-weight:600;">Idade Estimada do Ciclo</small>
+            <small style="color: #64748B; font-weight:600;">Idade do Ciclo</small>
             <h3 style="margin:0; color:#1E293B;">{batch_age_calc} dias</h3>
         </div>
     """, unsafe_allow_html=True)
@@ -276,7 +308,7 @@ with col_kpi1:
 with col_kpi2:
     st.markdown(f"""
         <div class="kpi-box">
-            <small style="color: #64748B; font-weight:600;">Consumo de Ração Calculado</small>
+            <small style="color: #64748B; font-weight:600;">Ração Consumida</small>
             <h3 style="margin:0; color:#1E293B;">{feed_consumed_calc:,} kg</h3>
         </div>
     """, unsafe_allow_html=True)
@@ -307,13 +339,13 @@ if submit_button:
     adjustment = prediction - technician_estimate
     
     st.markdown("---")
-    st.subheader("Análise concluída com sucesso.")
+    st.subheader("Análise concluída.")
     
     col_res1, col_res2, col_res3 = st.columns(3)
     with col_res1:
-        st.metric(label="Estimativa de Campo", value=f"{technician_estimate:.0f} g")
+        st.metric(label="Estimativa Campo", value=f"{technician_estimate:.0f} g")
     with col_res2:
-        st.metric(label="Previsão", value=f"{prediction:.0f} g", delta=f"{adjustment:.0f} g de ajuste", delta_color="inverse")
+        st.metric(label="Previsão IA", value=f"{prediction:.0f} g", delta=f"{adjustment:.0f} g", delta_color="inverse")
     with col_res3:
         st.metric(label="Mortalidade Real", value=f"{mortality_rate:.2f}%")
         
@@ -335,7 +367,7 @@ if submit_button:
     else:
         input_df.to_csv(csv_path, index=False)
         
-    st.info("Log de predição gravado com sucesso.")
+    st.info("Log de predição gravado.")
 
 # -----------------------------------------------------------------------------
 # 8. Signature

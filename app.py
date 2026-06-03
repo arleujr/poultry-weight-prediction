@@ -6,7 +6,7 @@ import joblib
 import os
 
 # -----------------------------------------------------------------------------
-# 1. UI Configuration & High-End Aesthetic (Premium Palette)
+# 1. UI Configuration & High-End Aesthetic (Custom Premium Palette)
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Preditor de Peso",
@@ -14,21 +14,21 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS Premium - Cores de Identidade Visual e Cards Arredondados
+# Custom CSS Premium - Destruindo o visual de Google Forms
 st.markdown("""
     <style>
-    /* Fundo geral da aplicação - Slate limpo */
+    /* Fundo geral da aplicação - Cinza Slate ultra limpo */
     .stApp {
         background-color: #F8FAFC;
     }
     
-    /* Banner Superior Estilo Dark Premium com indicador de destaque inferior */
+    /* Banner Superior Estilo Dark Premium */
     .brand-banner {
         background: linear-gradient(135deg, #0B1528 0%, #1E293B 100%);
         padding: 2.5rem;
         border-radius: 20px;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         border-bottom: 5px solid #FFD200; /* Destaque Amarelo */
     }
     
@@ -45,7 +45,44 @@ st.markdown("""
         margin: 0 !important;
     }
     
-    /* Estilização dos blocos de métricas (Cards Brancos com Destaque Vermelho) */
+    /* Box do Form - Visual Premium de Dashboard */
+    .stForm {
+        border-radius: 24px !important;
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        padding: 2.5rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Hack para destruir o visual de Google Forms nos Inputs (Select, Text, Number) */
+    div[data-baseweb="select"], div[data-baseweb="input"], input {
+        border-radius: 10px !important;
+        border: 1px solid #CBD5E1 !important;
+        background-color: #FFFFFF !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    
+    /* Efeito de Foco Ativo nos campos (Estilo App Web Moderno) */
+    div[data-baseweb="select"]:focus-within, div[data-baseweb="input"]:focus-within {
+        border-color: #E30613 !important; /* Borda vermelha ao focar */
+        box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1) !important;
+    }
+    
+    /* Substituindo o Alerta Azul por um Card Logístico Elegante */
+    div[data-testid="stNotification"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-left: 5px solid #FFD200 !important; /* Borda Amarela Corporativa */
+        border-radius: 12px !important;
+        color: #1E293B !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+    }
+    div[data-testid="stNotification"] p {
+        color: #1E293B !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Estilização dos blocos de métricas (Cards de Saída com Destaque Vermelho) */
     div[data-testid="stMetricSimpleUnit"] {
         background-color: #FFFFFF;
         padding: 1.5rem;
@@ -54,30 +91,23 @@ st.markdown("""
         border-left: 5px solid #E30613; /* Destaque Vermelho */
     }
     
-    /* Customização dos Inputs e Form */
-    .stForm {
-        border-radius: 20px !important;
-        background-color: #FFFFFF !important;
-        border: 1px solid #E2E8F0 !important;
-        padding: 2rem !important;
-    }
-    
-    /* Botão Principal de Ação no Vermelho Oficial */
+    /* Botão Principal de Ação */
     .stButton>button[kind="primary"] {
         background-color: #E30613 !important;
         color: #FFFFFF !important;
         border-radius: 12px !important;
         border: none !important;
-        padding: 0.6rem 2rem !important;
+        padding: 0.7rem 2rem !important;
         font-weight: 600 !important;
         width: 100%;
         transition: all 0.2s ease-in-out;
+        box-shadow: 0 4px 6px -1px rgba(227, 6, 19, 0.2);
     }
     
     .stButton>button[kind="primary"]:hover {
-        background-color: #FFD200 !important;
-        color: #E30613 !important;
+        background-color: #B90510 !important;
         transform: translateY(-1px);
+        box-shadow: 0 6px 10px -1px rgba(227, 6, 19, 0.3);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -143,6 +173,7 @@ with st.form("prediction_form"):
         placement_date = st.date_input("Data de Alojamento", datetime.date(2026, 4, 1), format="DD/MM/YYYY")
         lineage = st.selectbox("Linhagem", ["Ross 308", "Cobb 500"])
         
+        # O card de informação agora renderiza com borda esquerda amarela corporativa pelo CSS
         st.info(f"Distância: {FARM_REGISTRY[farm_id]['distance_km']} km")
         
     with col_log2:

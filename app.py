@@ -14,7 +14,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS - Sobrescrita de cores padrão para a paleta corporativa
+# Custom CSS - Sobrescrita total para a paleta corporativa (Vermelho e Amarelo)
 st.markdown("""
     <style>
     /* Fundo geral moderno */
@@ -94,17 +94,32 @@ st.markdown("""
         box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1) !important;
     }
     
-    /* Substituindo o Alerta Azul por um Card com borda Vermelha */
+    /* ------------------------------------------------------------------------
+       BLINDAGEM DO COMPONENTE DE DISTÂNCIA (st.info) - ELIMINANDO O AZUL NATIVO
+       ------------------------------------------------------------------------ */
     div[data-testid="stNotification"] {
         background-color: #FFFFFF !important;
         border: 1px solid #E2E8F0 !important;
-        border-left: 5px solid #E30613 !important; /* Trocado para o Vermelho */
+        border-left: 6px solid #E30613 !important; /* Borda grossa em Vermelho */
         border-radius: 14px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02) !important;
     }
+    
+    /* Forçando o texto interno a ficar em Vermelho */
     div[data-testid="stNotification"] p {
-        color: #1E293B !important;
-        font-weight: 600 !important;
+        color: #E30613 !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Altera as escritas numéricas/específicas internas para Amarelo de Destaque */
+    div[data-testid="stNotification"] strong, div[data-testid="stNotification"] span {
+        color: #FFD200 !important;
+    }
+    
+    /* Forçando o ícone nativo (SVG) a abandonar o azul e virar Vermelho */
+    div[data-testid="stNotification"] svg {
+        fill: #E30613 !important;
+        color: #E30613 !important;
     }
     
     /* Cards de KPI de Suporte Lateral (Idade e Ração) */

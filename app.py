@@ -187,7 +187,7 @@ st.markdown("""
 # -----------------------------------------------------------------------------
 st.subheader("Configuração Estratégica do Lote")
 
-tab_log, tab_san, tab_weight = st.tabs(["📍 1. Logística e Cadastro", "🏥 2. Manejo e Sanidade", "📈 3. Histórico de Pesagens"])
+tab_log, tab_san, tab_weight = st.tabs(["📍 1. Lote", "🏥 2. Manejo e Sanidade", "📈 3. Pesagens"])
 
 with tab_log:
     st.markdown("<br>", unsafe_allow_html=True)
@@ -267,7 +267,7 @@ with col_kpi2:
     """, unsafe_allow_html=True)
 
 # Main Execution Trigger
-submit_button = st.button("Executar Previsão Inteligente", type="primary")
+submit_button = st.button("Executar Previsão", type="primary")
 
 # -----------------------------------------------------------------------------
 # 7. Inference Pipeline & Output Layout
@@ -292,13 +292,13 @@ if submit_button:
     adjustment = prediction - technician_estimate
     
     st.markdown("---")
-    st.subheader("Análise de Série Temporal com Contexto Local concluída com sucesso.")
+    st.subheader("Análise concluída com sucesso.")
     
     col_res1, col_res2, col_res3 = st.columns(3)
     with col_res1:
         st.metric(label="Estimativa de Campo", value=f"{technician_estimate:.0f} g")
     with col_res2:
-        st.metric(label="Previsão Inteligente (IA)", value=f"{prediction:.0f} g", delta=f"{adjustment:.0f} g de ajuste", delta_color="inverse")
+        st.metric(label="Previsão", value=f"{prediction:.0f} g", delta=f"{adjustment:.0f} g de ajuste", delta_color="inverse")
     with col_res3:
         st.metric(label="Mortalidade Real", value=f"{mortality_rate:.2f}%")
         

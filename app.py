@@ -340,7 +340,7 @@ if submit_button:
     with col_res1:
         st.metric(label="Estimativa Campo", value=f"{technician_estimate:.0f} g")
     with col_res2:
-        st.metric(label="Previsão IA", value=f"{prediction:.0f} g", delta=f"{adjustment:.0f} g", delta_color="inverse")
+        st.metric(label="Previsão", value=f"{prediction:.0f} g", delta=f"{adjustment:.0f} g", delta_color="inverse")
     with col_res3:
         st.metric(label="Mortalidade Real", value=f"{mortality_rate:.2f}%")
         

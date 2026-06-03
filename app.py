@@ -6,43 +6,63 @@ import joblib
 import os
 
 # -----------------------------------------------------------------------------
-# 1. UI Configuration & Corporate Branding (Pif Paf Identity)
+# 1. UI Configuration & High-End Aesthetic (Premium Palette)
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Preditor de Peso | Pif Paf",
+    page_title="Preditor de Peso",
     page_icon="🐔",
     layout="centered"
 )
 
-# Premium Custom CSS - Clean Dashboard & Rounded Cards Aesthetic
+# Custom CSS Premium - Cores de Identidade Visual e Cards Arredondados
 st.markdown("""
     <style>
-    /* Fundo da aplicação levemente acinzentado para destacar os cards brancos */
+    /* Fundo geral da aplicação - Slate limpo */
     .stApp {
         background-color: #F8FAFC;
     }
     
-    /* Linha de destaque superior com o Amarelo da marca */
-    header {
-        border-bottom: 5px solid #FFD200;
+    /* Banner Superior Estilo Dark Premium com indicador de destaque inferior */
+    .brand-banner {
+        background: linear-gradient(135deg, #0B1528 0%, #1E293B 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-bottom: 5px solid #FFD200; /* Destaque Amarelo */
     }
     
-    /* Título Principal no Vermelho oficial */
-    h1 {
-        color: #E30613 !important;
+    .brand-banner h1 {
+        color: #FFFFFF !important;
+        font-size: 2.2rem !important;
         font-weight: 700 !important;
+        margin-bottom: 0.5rem !important;
     }
     
-    /* Estilização dos blocos de métricas (Efeito Cards/Bento Grid) */
+    .brand-banner p {
+        color: #94A3B8 !important;
+        font-size: 1rem !important;
+        margin: 0 !important;
+    }
+    
+    /* Estilização dos blocos de métricas (Cards Brancos com Destaque Vermelho) */
     div[data-testid="stMetricSimpleUnit"] {
         background-color: #FFFFFF;
         padding: 1.5rem;
         border-radius: 16px;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        border-left: 5px solid #E30613;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid #E30613; /* Destaque Vermelho */
     }
     
-    /* Customização do Botão Principal */
+    /* Customização dos Inputs e Form */
+    .stForm {
+        border-radius: 20px !important;
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        padding: 2rem !important;
+    }
+    
+    /* Botão Principal de Ação no Vermelho Oficial */
     .stButton>button[kind="primary"] {
         background-color: #E30613 !important;
         color: #FFFFFF !important;
@@ -57,6 +77,7 @@ st.markdown("""
     .stButton>button[kind="primary"]:hover {
         background-color: #FFD200 !important;
         color: #E30613 !important;
+        transform: translateY(-1px);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -89,8 +110,12 @@ except FileNotFoundError:
 # -----------------------------------------------------------------------------
 # 4. Main Application Header
 # -----------------------------------------------------------------------------
-st.title("Previsão de peso de abate")
-st.markdown("Insira os dados operacionais do lote para calcular a estimativa final baseada em aprendizado de máquina.")
+st.markdown("""
+    <div class="brand-banner">
+        <h1>Previsão de peso de abate</h1>
+        <p>Insira os dados operacionais do lote para calcular a estimativa final baseada em aprendizado de máquina.</p>
+    </div>
+""", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 5. Data Ingestion Form
@@ -118,7 +143,6 @@ with st.form("prediction_form"):
         placement_date = st.date_input("Data de Alojamento", datetime.date(2026, 4, 1), format="DD/MM/YYYY")
         lineage = st.selectbox("Linhagem", ["Ross 308", "Cobb 500"])
         
-        # Displaying the immutable distance fetched from master data
         st.info(f"Distância: {FARM_REGISTRY[farm_id]['distance_km']} km")
         
     with col_log2:
@@ -129,7 +153,7 @@ with st.form("prediction_form"):
     st.markdown("---")
     st.subheader("Manejo Sanitário e Consumo de Ração")
     
-    # Health Metrics - UI collects raw data, backend calculates the rates
+    # Health Metrics
     col_mort1, col_mort2, col_mort3 = st.columns(3)
     with col_mort1:
         housed_birds = st.number_input("Total de Aves Alojadas", min_value=1, value=17200, step=100)
@@ -163,26 +187,19 @@ with st.form("prediction_form"):
     st.markdown("---")
     st.subheader("Estimativa final")
     
-    # Human Baseline / Viable Target
     technician_estimate = st.number_input("Estimativa do Técnico (g)", min_value=0.0, value=3200.0, step=10.0)
     
-    # Execution Trigger
     submit_button = st.form_submit_button("Calcular Estimativa", type="primary")
 
 # -----------------------------------------------------------------------------
 # 6. Inference Pipeline & Feature Alignment
 # -----------------------------------------------------------------------------
 if submit_button:
-    # Feature Engineering: Feature derivations based on database schema definitions
     batch_age_days = (slaughter_date - placement_date).days
-    
-    # Cálculo corrigido: somando mortos + refugos antes de calcular a taxa
     mortality_rate = ((dead_birds + culls) / housed_birds) * 100 if housed_birds > 0 else 0
-    
     feed_consumed_kg = feed_delivered_kg - feed_remaining_kg
     resolved_distance = FARM_REGISTRY[farm_id]['distance_km']
     
-    # Creating raw feature dictionary matching the model training inputs
     input_data = {
         'lineage': [lineage],
         'sex': [sex],
@@ -199,17 +216,14 @@ if submit_button:
     }
     
     input_df = pd.DataFrame(input_data)
-    
-    # Handling categorical cross-sections via One-Hot Encoding alignment
     input_encoded = pd.get_dummies(input_df)
     input_aligned = input_encoded.reindex(columns=expected_columns, fill_value=0)
     
-    # Model Inference execution
     prediction = model.predict(input_aligned)[0]
     adjustment = prediction - technician_estimate
     
     # -------------------------------------------------------------------------
-    # 7. Output Visualization Layer (Estilo Cards Premium)
+    # 7. Output Visualization Layer
     # -------------------------------------------------------------------------
     st.markdown("<br>", unsafe_allow_html=True)
     st.subheader("Análise de Série Temporal com Contexto Local concluída com sucesso.")
@@ -247,7 +261,6 @@ if submit_button:
     os.makedirs(output_dir, exist_ok=True)
     csv_path = os.path.join(output_dir, "ai_predictions.csv")
     
-    # Appending session metadata for audit logs
     input_df['batch_id'] = batch_id
     input_df['farm_id'] = farm_id
     input_df['technician_id'] = technician_id

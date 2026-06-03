@@ -4,9 +4,9 @@ data/
 *.xlsx
 *.duckdb
 
-# Machine Learning models
-models/*.pkl
-models/*.joblib
+# Machine Learning models (Allowing production artifacts while blocking temporary weights)
+models/
+!models/*.joblib
 
 # Python environments and cache
 __pycache__/
@@ -14,3 +14,4 @@ __pycache__/
 .venv/
 venv/
 .env
+.ipynb_checkpoints/
